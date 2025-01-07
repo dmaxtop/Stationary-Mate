@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f5f5fa;
+            font-family: Arial, sans-serif;
+        }
+        .sidebar {
+            background-color: #4a4e69;
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .sidebar a:hover {
+            background-color: #6c757d;
+        }
+        .container {
+            margin-top: 30px;
+        }
+        .section {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .section h3 {
+            margin-bottom: 20px;
+        }
+        .btn-primary {
+            background-color: #4a4e69;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #6c757d;
+        }
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #4a4e69;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h4>StationeryMate</h4>
+            <a href="{{ url_for('customer_home') }}">GO SHOPPING!</a>
+            <a href="{{ url_for('order_tracking') }}">Track Orders</a>
+            <a href="{{ url_for('update_account') }}">Update Account</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="container-fluid">
+            <h1>Welcome to Stationery Mate</h1>
+
+            <!-- Account Information Section -->
+            <div class="section">
+                <h3>Account Information</h3>
+                <p><strong>Name:</strong> {{ customer_info[1] }}</p>
+                <p><strong>Email:</strong> {{ customer_info[2] }}</p>
+                <p><strong>Phone:</strong> {{ customer_info[4] }}</p>
+                <p><strong>Address:</strong> {{ customer_info[5] }}</p>
+
+                <a href="{{ url_for('update_account') }}" class="btn btn-primary">Update Account Information</a>
+            </div>
+
+            <!-- Total Orders Section -->
+            <div class="section">
+                <h3>Total Orders</h3>
+                <p>{{order}}</p>
+                <p>You have placed a total of <strong>{{ total_orders }}</strong> orders.</p>
+                <p><strong>Total Spent:</strong> ${{ total_spent }}</p>
+            </div>
+
+            <!-- Recent Orders Section -->
+            <div class="section">
+                <h3>Recent Orders</h3>
+                {% if recent_orders %}
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Order No</th>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Order Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in recent_orders %}
+                                <tr>
+
+                                    <td>{{ order[0] }}</td>
+                                    <td>{{ order[1] }}</td>
+                                    <td>{{ order[3] }}</td>
+                                    <td>${{ order[4] }}</td>
+                                    <td>{{ order[3] }}</td>
+                                    <td>
+                                        {% if order[5] == 'Shipped' %}
+                                            <!-- Shipped Icon -->
+                                            <span class="badge bg-success">Shipped</span>
+                                        {% else %}
+                                            <!-- Delete Button -->
+                                            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteOrderModal" data-order-id="{{ order[0] }}">Delete Order</button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>No recent orders found.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Stationery Mate. All rights reserved.</p>
+    </footer>
+
+    <!-- Delete Order Confirmation Modal -->
+    <div class="modal fade" id="deleteOrderModal" tabindex="-1" aria-labelledby="deleteOrderModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteOrderModalLabel">Delete Order</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this order?
+                </div>
+                <div class="modal-footer">
+                    <form id="deleteOrderForm" action="" method="POST">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Bootstrap JS (if not already included) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JavaScript for dynamic form action -->
+    <script>
+        // Set the form action URL dynamically when the delete button is clicked
+        const deleteButtons = document.querySelectorAll('.btn-danger');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const orderId = this.getAttribute('data-order-id');
+                const deleteForm = document.getElementById('deleteOrderForm');
+                if (orderId) {
+                    deleteForm.action = `/delete_order/${orderId}`; // Set the form action to the delete route
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

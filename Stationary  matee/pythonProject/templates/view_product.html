@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product[2] }} - Stationery Mate</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f5f5fa;
+            font-family: Arial, sans-serif;
+        }
+        .sidebar {
+            background-color: #4a4e69;
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .sidebar a:hover {
+            background-color: #6c757d;
+        }
+        .product-detail {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: white;
+        }
+        .product-detail img {
+            max-width: 100%;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .product-detail h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        .product-detail p {
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        .btn-primary {
+            background-color: #4a4e69;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #6c757d;
+        }
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #4a4e69;
+            color: white;
+        }
+        .quantity-selector input {
+            width: 60px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h4>StationeryMate</h4>
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('login') }}">Customer Login</a>
+            <a href="{{ url_for('seller_login') }}">Seller Login</a>
+            <a href="{{ url_for('register') }}">Register</a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="container-fluid p-4">
+            <div class="product-detail">
+                <div class="row">
+                    <div class="col-md-6">
+                        <img src="{{ product[8] }}" alt="{{ product[2] }}">
+                    </div>
+                    <div class="col-md-6">
+                        <h1>{{ product[2] }}</h1>
+                        <p>{{ product[3] }}</p> <!-- Product Description -->
+                        <p><strong>Price:</strong> ${{ product[4] }}</p>
+
+                        {% if product[5] > 0 %}
+                            <p><strong>Stock:</strong> In Stock ({{ product[5] }})</p>
+                        {% else %}
+                            <p><strong>Stock:</strong> Out of Stock</p>
+                        {% endif %}
+
+                        <p><strong>Seller:</strong> {{ product[11] }}</p> <!-- Seller Name -->
+
+                        {% if product[7] == 'Books' %}
+                            <p><strong>Author:</strong> {{ product[8] }}</p>
+                        {% elif product[7] == 'Papers' %}
+                            <p><strong>Type:</strong> {{ product[9] }}</p>
+                        {% elif product[7] == 'Art Accessories' %}
+                            <p><strong>Expires on:</strong> {{ product[10] }}</p>
+                        {% endif %}
+
+
+
+                        <!-- Add to Cart Button -->
+                        {% if product[5] > 0 %}
+                            <form action="{{ url_for('add_to_cart', product_id=product[0]) }}" method="POST">
+                                <input type="hidden" name="product_id" value="{{ product[0] }}">
+                                <input type="hidden" name="product_name" value="{{ product[2] }}">
+                                <input type="hidden" name="product_price" value="{{ product[4] }}">
+                                <input type="hidden" name="product_image" value="{{ product[8] }}">
+                                <input type="hidden" name="product_description" value="{{ product[3] }}">
+                                <input type="hidden" name="product_category" value="{{ product[7] }}">
+                                <input type="hidden" name="product_stock" value="{{ product[5] }}">
+                                <input type="number" name="quantity" value="1" min="1" max="{{ product[5] }}">
+                                <button type="submit" class="btn btn-primary">Add to Cart</button>
+                            </form>
+                        {% else %}
+                            <button class="btn btn-secondary" disabled>Out of Stock</button>
+                        {% endif %}
+
+                        <!-- Back to Category Button -->
+                        <a href="{{ url_for('category', category_name=product[7]) }}" class="btn btn-secondary mt-5">
+                            Back to {{ product[7] }}
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Stationery Mate. All rights reserved.</p>
+    </footer>
+
+    <!-- Add Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

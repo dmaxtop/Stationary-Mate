@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Dashboard</title>
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f5f5fa;
+            font-family: Arial, sans-serif;
+        }
+        .sidebar {
+            background-color: #4a4e69;
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .sidebar a:hover {
+            background-color: #6c757d;
+        }
+        .dashboard-header {
+            margin-bottom: 30px;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #4a4e69;
+            color: white;
+            border-radius: 10px 10px 0 0;
+        }
+        .chart-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h4>StationaryMate</h4>
+            <a href="{{ url_for('seller_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('add_product') }}">Add Product</a>
+            <a href="{{ url_for('account_information') }}">Account Information</a>  <!-- New tab -->
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="container-fluid p-4">
+            <div class="dashboard-header">
+                <h1>Welcome, {{ name }}</h1>
+            </div>
+
+            <div class="row">
+                <!-- Metrics -->
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5>Orders</h5>
+                            <h3>{{total_orders}}</h3>
+                            <p>+{{weekly_sales_count}} since last week</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5>Profit</h5>
+                            <h3>${{total_price}}</h3>
+                            <p>+{{weekly_sales}} since last week</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Your Low Stocks Products Section -->
+            <div class="mt-5">
+                <h3>Low Stock Products</h3>
+                <ul class="list-group">
+                    {% if products %}
+                        {% for product in low_stock_products %}
+                            <li class="list-group-item">
+                                {{ product[2] }} - ${{ product[4] }} - Qty: {{ product[5] }}
+                                <a href="{{ url_for('update_product', product_id=product[0]) }}" class="btn btn-sm btn-primary ms-3">Update Product</a>
+
+
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="list-group-item">No products available.</li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- Sales Statistics Chart -->
+            <div class="chart-container">
+                <h3>Sales Statistics</h3>
+                <canvas id="salesChart"></canvas>
+            </div>
+
+            <!-- Your Products Section -->
+            <div class="mt-5">
+                <h3>Your Products</h3>
+                <ul class="list-group">
+                    {% if products %}
+                        {% for product in products %}
+                            <li class="list-group-item">
+                                {{ product[2] }} - ${{ product[4] }} - Qty: {{ product[5] }}
+                                <a href="{{ url_for('update_product', product_id=product[0]) }}" class="btn btn-sm btn-primary ms-3">Update Product</a>
+                                <form action="{{ url_for('delete_product', product_id=product[0]) }}" method="POST" class="d-inline">
+                                    <button class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?');">Delete</button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="list-group-item">No products available.</li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- Received Orders Section -->
+            <div class="mt-5">
+                <h3>Received Orders</h3>
+                <ul class="list-group">
+                    {% if received_orders %}
+                        {% for order in received_orders %}
+                            <li class="list-group-item">
+                                Order #{{ order[0] }} - Customer: {{ order[1] }} - Total: ${{ order[5] }}
+                                <a href="{{ url_for('view_order', order_id=order[0]) }}" class="btn btn-sm btn-info ms-3">View Order</a>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="list-group-item">No orders received.</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- Add Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        const salesChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['7 days', '14 days', '21 days'],
+                datasets: [{
+                    label: 'Sales ',
+                    data: [0, 0, 0], // Initial placeholder data
+                    borderColor: '#4a4e69',
+                    backgroundColor: 'rgba(74, 78, 105, 0.1)',
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: {
+                            color: '#333'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            color: '#4a4e69'
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            color: '#4a4e69'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Function to fetch sales data and update the chart
+        function fetchRealTimeData() {
+            fetch('/get_sales_summary')
+                .then(response => response.json())
+                .then(data => {
+                    // Update chart data
+                    salesChart.data.datasets[0].data = [
+                        data.total_sales_21_days,
+                        data.total_sales_14_days,
+                        data.total_sales_7_days
+                    ];
+                    salesChart.update();
+                })
+                .catch(error => console.error('Error fetching real-time data:', error));
+        }
+
+        // Fetch and update data every 10 seconds
+        setInterval(fetchRealTimeData, 10000);
+
+        // Initial data fetch on page load
+        fetchRealTimeData();
+    </script>
+
+
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Orders</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f5f5fa;
+            font-family: Arial, sans-serif;
+        }
+        .sidebar {
+            background-color: #4a4e69;
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .sidebar a:hover {
+            background-color: #6c757d;
+        }
+        .container {
+            margin-top: 30px;
+        }
+        .section {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .section h3 {
+            margin-bottom: 20px;
+        }
+        .btn-primary {
+            background-color: #4a4e69;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #6c757d;
+        }
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #4a4e69;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h4>StationeryMate</h4>
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('order_tracking') }}">Track Orders</a>
+            <a href="{{ url_for('update_account') }}">Update Account</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="container-fluid">
+            <h1>Your Orders</h1>
+
+            <!-- Orders Section -->
+            <div class="section">
+                {% if orders %}
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Order No</th>
+                                <th>Order Date</th>
+                                <th>Status</th>
+                                <th>Seller</th>
+                                <th>Quantity</th>
+                                <th>Total Spent</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                                <tr>
+                                    <td>{{ order[0] }}</td>
+                                    <td>{{ order[1] }}</td>
+                                    <td>{{ order[2] }}</td>
+                                    <td>{{ order[3] }}</td>
+                                    <td>{{ order[4] }}</td>
+                                    <td>${{ order[5] }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>You have no orders yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Stationery Mate. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stationery Mate - Customer Dashboard</title>
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f5f5fa;
+            font-family: Arial, sans-serif;
+        }
+        .sidebar {
+            background-color: #4a4e69;
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .sidebar a:hover {
+            background-color: #6c757d;
+        }
+        .hero {
+            background-color: #4a4e69;
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+        .hero .highlight {
+            color: #ffcc00;
+        }
+        .section {
+            padding: 40px 0;
+            text-align: center;
+        }
+        .section h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        .section p {
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+        .product-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            padding: 15px;
+            text-align: center;
+        }
+        .product-card img {
+            max-width: 100%;
+            border-radius: 5px;
+            height: auto;
+        }
+        .product-card h5 {
+            font-size: 1.2rem;
+            margin-top: 10px;
+        }
+        .product-card p {
+            font-size: 1rem;
+            color: #555;
+        }
+        .product-card .btn {
+            background-color: #4a4e69;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+        .product-card .btn:hover {
+            background-color: #6c757d;
+        }
+        .category-box {
+            background-color: #4a4e69;
+            color: white;
+            padding: 20px;
+            margin: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .category-box:hover {
+            background-color: #6c757d;
+        }
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #4a4e69;
+            color: white;
+        }
+
+        /* Larger Cart Button */
+        .cart-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #4a4e69;
+            color: white;
+            padding: 20px 30px;
+            border-radius: 50%;
+            font-size: 25px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .cart-button:hover {
+            background-color: #6c757d;
+        }
+
+        .cart-button .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #ffcc00;
+            color: black;
+            padding: 7px 14px;
+            border-radius: 50%;
+            font-size: 16px;
+        }
+
+        .cart-button span {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h4>Welcome, {{ customer_name }}</h4> <!-- Display the customer's name -->
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('order_tracking') }}">Track Orders</a>
+            <a href="{{ url_for('customer_dashboard') }}">Customer Dashboard</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="container-fluid p-4">
+            <!-- Header Section -->
+            <header class="hero">
+                <div class="overlay">
+                    <h1>Welcome to <span class="highlight">Stationery Mate</span></h1>
+                    <p>Your one-stop solution for all stationery needs</p>
+                </div>
+            </header>
+
+            <!-- Search Bar Section -->
+            <section class="section">
+                <h2>Search for Products</h2>
+                <form method="GET" action="{{ url_for('search_results') }}">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="search_query" placeholder="Search for products..." value="{{ request.args.get('search_query', '') }}">
+                        <button class="btn btn-outline-secondary" type="submit">Search</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Categories Section -->
+            <section class="section">
+                <h2>Explore Our Categories</h2>
+                <p>Browse our categories to find the best stationery products.</p>
+                <div class="row justify-content-center">
+                    <div class="col-md-3">
+                        <div class="category-box" onclick="window.location.href='{{ url_for('category', category_name='Pen and Pencil') }}'">
+                            <h4>Pen and Pencil</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="category-box" onclick="window.location.href='{{ url_for('category', category_name='Books') }}'">
+                            <h4>Books</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="category-box" onclick="window.location.href='{{ url_for('category', category_name='Papers') }}'">
+                            <h4>Papers</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="category-box" onclick="window.location.href='{{ url_for('category', category_name='Art Accessories') }}'">
+                            <h4>Art Accessories</h4>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Top Trending Products Section -->
+            <section class="section">
+                <h2>Top Trending Products</h2>
+                <p>Explore our most popular and trending products right now!</p>
+                <div class="row">
+                    {% for product in products %}
+                        <div class="col-md-4">
+                            <div class="product-card">
+                                <img src="{{ product.image_url }}" alt="{{ product[2] }}">
+                                <h5>{{ product[2] }}</h5>
+                                <p>${{ product[4] }}</p>
+                                <a href="{{ url_for('view_product', product_id=product[0]) }}" class="btn">View Product</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Cart Button -->
+    <a href="{{ url_for('view_cart') }}" class="cart-button">
+        <i class="fas fa-shopping-cart"></i>
+        <span>CART ({{ cart_item_count }})</span>
+    </a>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Stationery Mate. All rights reserved.</p>
+    </footer>
+
+    <!-- Add Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
